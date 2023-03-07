@@ -5,7 +5,8 @@ from docx import Document
 from docx.shared import RGBColor
 from docx.enum.text import WD_COLOR_INDEX, WD_UNDERLINE
 
-# ChatGPT 写一个python程序，需求是，输入一个html文档，把里面的一些字符，存成txt。需要提取的内容位于“题目内容”和“题目内容”之间，注意，内容不止一处。要去除html的各种标签。接下来还要做一些字符串处理。在"答对学生"，“答错学生”，“答题模式”，“题目类型“，”正确答案“和“未答学生”前面都要加一个换行符。数字前面的"："要去掉。
+# ChatGPT Input1: 
+# 写一个python程序，需求是，输入一个html文档，把里面的一些字符，存成txt。需要提取的内容位于“题目内容”和“题目内容”之间，注意，内容不止一处。要去除html的各种标签。接下来还要做一些字符串处理。在"答对学生"，“答错学生”，“答题模式”，“题目类型“，”正确答案“和“未答学生”前面都要加一个换行符。数字前面的"："要去掉。
 
 # 自定义HTML解析器，用于去除HTML标签
 class MyHTMLParser(HTMLParser):
@@ -51,7 +52,10 @@ with open('output.txt', 'w', encoding='utf-8') as f:
         f.write(text + '\n')
 
 
-# ChatGPT: 写一个python程序，需求是，输入一个txt文档，你需要提取数字加句号和”答错学生“之间的字符，并且把所有的字符存成一个列表。
+        
+        
+# ChatGPT Input 2:
+# 写一个python程序，需求是，输入一个txt文档，你需要提取数字加句号和”答错学生“之间的字符，并且把所有的字符存成一个列表。
 
 # 读取TXT文件
 with open('output.txt', 'r', encoding='utf-8') as f:
@@ -89,7 +93,12 @@ unique_matches = list(set(matches))
 my_dict = {match: '' for match in unique_matches}
 
 
-#ChatGPT: give me a python code. I will give you a dictionary and a list. The elements in the list are str. Then, for every key in the dictionary, you search for the key in every element of the list. If the key is in one element, you put the a part of element of the list into the value of the key. The part is the string before "答对学生" for every element in the list. If the key already has a value, append it.
+
+
+
+#ChatGPT Input 3: 
+#give me a python code. I will give you a dictionary and a list. The elements in the list are str. Then, for every key in the dictionary, you search for the key in every element of the list. If the key is in one element, you put the a part of element of the list into the value of the key. The part is the string before "答对学生" for every element in the list. If the key already has a value, append it.
+
 # 输出字典
 for key in my_dict:
     for element in text_list:
@@ -102,6 +111,11 @@ for key in my_dict:
 
 print(my_dict)
 
+
+
+
+
+# ChatGPT input 4:
 # Export a dictionary to word file. The value of the key in the dictionary is a list. Therefore, you put every key in a line, every element in the list (i.e., dictionary values) in a line. Also, the key, when exporting, should be in red and bold.
 
 doc = Document()
