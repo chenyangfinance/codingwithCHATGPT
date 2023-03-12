@@ -6,60 +6,21 @@ from docx.shared import RGBColor
 from docx.enum.text import WD_COLOR_INDEX, WD_UNDERLINE
 
 # ChatGPT 写一个python程序，需求是，输入一个html文档，把里面的一些字符，存成txt。需要提取的内容位于“题目内容”和“题目内容”之间，注意，内容不止一处。要去除html的各种标签。接下来还要做一些字符串处理。在"答对学生"，“答错学生”，“答题模式”，“题目类型“，”正确答案“和“未答学生”前面都要加一个换行符。数字前面的"："要去掉。
+from bs4 import BeautifulSoup
 
-# 自定义HTML解析器，用于去除HTML标签
-class MyHTMLParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.text = ''
-
-    def handle_data(self, data):
-        self.text += data.strip()
-
-    def handle_entityref(self, name):
-        self.text += self.unescape('&{};'.format(name))
-
-    def handle_charref(self, name):
-        self.text += self.unescape('&#{};'.format(name))
-
-# 读取HTML文件
+# 读取HTML文档
 with open('input.html', 'r', encoding='utf-8') as f:
-    html_doc = f.read()
+    html = f.read()
 
-# 提取多个指定文本
-pattern = r'题目内容(.*?)题目内容'
-matches = re.findall(pattern, html_doc, re.S)
-texts = [match.strip() for match in matches]
+# 使用BeautifulSoup库去除HTML标签
+soup = BeautifulSoup(html, 'html.parser')
+text = soup.get_text()
 
-# 去除HTML标签并进行字符串处理
-processed_texts = []
-for text in texts:
-    # 去除HTML标签
-    parser = MyHTMLParser()
-    parser.feed(text)
-    processed_text = parser.text
-    parser.text = ''
-
-    # 字符串处理
-    processed_text = re.sub(r'[:：]([0-9])', r'\g<1>', processed_text)  # 去除数字前面的冒号或者中文冒号
-    processed_text = re.sub(r'(答对学生|答错学生|答题模式|题目类型|正确答案|未答学生)', r'\n\g<0>', processed_text)  # 在答对学生、答错学生、答题模式、题目类型、正确答案和未答学生前面加一个换行符
-    processed_texts.append(processed_text)
-
-# 将处理后的文本保存为TXT文件
-with open('output.txt', 'w', encoding='utf-8') as f:
-    for text in processed_texts:
-        f.write(text + '\n')
-
-
-# ChatGPT: 写一个python程序，需求是，输入一个txt文档，你需要提取数字加句号和”答错学生“之间的字符，并且把所有的字符存成一个列表。
-
-# 读取TXT文件
-with open('output.txt', 'r', encoding='utf-8') as f:
-    txt_doc = f.read()
+# ChatGPT 写一个python程序，需求是，输入一个txt文档，按照”未答学生“分割字符串，然后删除掉获取所有”答对学生“和”未答“之间的字符串
 
 # 提取数字加句号和“答错学生”之间的字符
 pattern = r'(\d+\.)\s*(.*?)未答学生'
-matches = re.findall(pattern, txt_doc, re.S)
+matches = re.findall(pattern, text, re.S)
 texts = [match[1].strip() for match in matches]
 
 # 将提取的文本存储到列表中
@@ -70,15 +31,15 @@ def remove_text(lst):
     for text in lst:
         start = text.find('答对学生')
         if start != -1:
-            end = text.find('答错学生')
+            end = text.find('答错')
             if end != -1:
-                result.append(text[:start] + text[end+4:])
+                result.append(text[:start] + text[end+2:])
             else:
                 result.append(text[:start])
         else:
-            start = text.find('答错学生')
+            start = text.find('答错')
             if start != -1:
-                result.append(text[start+4:])
+                result.append(text[start+2:])
             else:
                 result.append(text)
     return result
@@ -112,7 +73,7 @@ my_dict = {match: '' for match in unique_matches}
 for key in my_dict:
     for element in text_list:
         if key in element:
-            value = element.split("答对学生")[0].strip()
+            value = element.split("学生")[0].strip()
             if my_dict[key]:
                 my_dict[key].append(value)
             else:
