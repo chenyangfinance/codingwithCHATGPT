@@ -1,0 +1,22 @@
+import requests
+import time
+import random
+
+start_paper = 1
+end_paper = 31053
+
+for paper_number in range(start_paper, end_paper + 1):
+    paper_number_str = f"{paper_number:04}"
+    url = f"https://www.nber.org/system/files/working_papers/w{paper_number_str}/w{paper_number_str}.pdf"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        with open(f"{paper_number_str}.pdf", "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded paper {paper_number_str}")
+    else:
+        print(f"Could not download paper {paper_number_str}")
+
+    # introduce random delay of 3-5 seconds
+    delay = random.uniform(3, 5)
+    time.sleep(delay)
